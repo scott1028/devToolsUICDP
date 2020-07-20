@@ -1,0 +1,42 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../../scripts/build/ninja/devtools_pre_built.gni")
+
+devtools_pre_built("codemirror") {
+  sources = [
+    "codemirror-tsconfig.json",
+    "package/addon/comment/comment.js",
+    "package/addon/edit/closebrackets.js",
+    "package/addon/edit/matchbrackets.js",
+    "package/addon/fold/brace-fold.js",
+    "package/addon/fold/foldcode.js",
+    "package/addon/fold/foldgutter.js",
+    "package/addon/mode/multiplex.js",
+    "package/addon/mode/overlay.js",
+    "package/addon/mode/simple.js",
+    "package/addon/runmode/runmode-standalone.d.ts",
+    "package/addon/runmode/runmode-standalone.js",
+    "package/addon/selection/active-line.js",
+    "package/addon/selection/mark-selection.js",
+    "package/lib/codemirror.js",
+    "package/mode/clike/clike.js",
+    "package/mode/clojure/clojure.js",
+    "package/mode/coffeescript/coffeescript.js",
+    "package/mode/css/css.d.ts",
+    "package/mode/css/css.js",
+    "package/mode/htmlembedded/htmlembedded.js",
+    "package/mode/htmlmixed/htmlmixed.js",
+    "package/mode/javascript/javascript.js",
+    "package/mode/jsx/jsx.js",
+    "package/mode/livescript/livescript.js",
+    "package/mode/markdown/markdown.js",
+    "package/mode/php/php.js",
+    "package/mode/python/python.js",
+    "package/mode/shell/shell.js",
+    "package/mode/wast/wast.js",
+    "package/mode/xml/xml.d.ts",
+    "package/mode/xml/xml.js",
+  ]
+}
