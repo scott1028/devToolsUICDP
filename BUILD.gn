@@ -5,8 +5,6 @@
 import("../scripts/build/ninja/copy.gni")
 import("../third_party/typescript/typescript.gni")
 
-resources_out_dir = "$root_out_dir/resources/inspector"
-
 group("front_end") {
   public_deps = [
     ":front_end_html_entrypoints",
@@ -26,9 +24,10 @@ group("front_end") {
   ]
 }
 
-copy("front_end_html_entrypoints") {
+copy_sources_to_resources("front_end_html_entrypoints") {
   sources = [
     "devtools_app.html",
+    "formatter_worker_entrypoint.js",
     "inspector.html",
     "integration_test_runner.html",
     "js_app.html",
@@ -37,8 +36,6 @@ copy("front_end_html_entrypoints") {
     "toolbox.html",
     "worker_app.html",
   ]
-
-  outputs = [ "$resources_out_dir/{{source_file_part}}" ]
 }
 
 copy_sources_to_resources("embedder-scripts") {
