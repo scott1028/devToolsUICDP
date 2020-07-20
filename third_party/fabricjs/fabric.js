@@ -45,6 +45,7 @@ else {
  */
 fabric.isTouchSupported = 'ontouchstart' in fabric.window || 'ontouchstart' in fabric.document ||
   (fabric.window && fabric.window.navigator && fabric.window.navigator.maxTouchPoints > 0);
+// fabric.isTouchSupported = false;
 
 /**
  * True when in environment that's probably Node.js

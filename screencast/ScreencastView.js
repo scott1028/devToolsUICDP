@@ -59,13 +59,16 @@ export class ScreencastView extends UI.Widget.VBox {
   initialize() {
     this.element.classList.add('screencast');
 
-    this._createNavigationBar();
+    // this._createNavigationBar();
 
     this._viewportElement = this.element.createChild('div', 'screencast-viewport hidden');
-    this._canvasContainerElement = this._viewportElement.createChild('div', 'screencast-canvas-container');
+    this._viewportElement.style.display = 'none';
+    // this._canvasContainerElement = this._viewportElement.createChild('div', 'screencast-canvas-container');
+    this._canvasContainerElement = this.element.createChild('div', 'screencast-canvas-container');
     this._glassPaneElement = this._canvasContainerElement.createChild('div', 'screencast-glasspane fill hidden');
 
     this._canvasElement = this._canvasContainerElement.createChild('canvas');
+    // this._canvasElement = this._viewportElement.createChild('canvas');
     UI.ARIAUtils.setAccessibleName(this._canvasElement, ls`Screencast view of debug target`);
     this._canvasElement.tabIndex = 0;
     this._canvasElement.addEventListener('mousedown', this._handleMouseEvent.bind(this), false);
@@ -138,12 +141,23 @@ export class ScreencastView extends UI.Widget.VBox {
     dimensions.width *= window.devicePixelRatio;
     dimensions.height *= window.devicePixelRatio;
     // Note: startScreencast width and height are expected to be integers so must be floored.
+    // const castedWidth = Math.floor(Math.min(maxImageDimension, dimensions.width));
+    // const castedHeight = Math.floor(Math.min(maxImageDimension, dimensions.height));
+    const castedWidth = window.innerWidth;
+    const castedHeight = window.innerHeight;
+    // console.log('_startCasting/castedWidth,castedHeight:', castedWidth, castedHeight);
     this._screenCaptureModel.startScreencast(
-        Protocol.Page.StartScreencastRequestFormat.Jpeg, 80, Math.floor(Math.min(maxImageDimension, dimensions.width)),
-        Math.floor(Math.min(maxImageDimension, dimensions.height)), undefined, this._screencastFrame.bind(this),
+        Protocol.Page.StartScreencastRequestFormat.Png,
+        50,
+        castedWidth,
+        castedHeight,
+        // undefined,
+        10,
+        this._screencastFrame.bind(this),
         this._screencastVisibilityChanged.bind(this));
     for (const emulationModel of SDK.SDKModel.TargetManager.instance().models(SDK.EmulationModel.EmulationModel)) {
-      emulationModel.overrideEmulateTouch(true);
+      // emulationModel.overrideEmulateTouch(true);
+      emulationModel.overrideEmulateTouch(false); // NOTE: disable touch mode and then allow mouse operation just like PC
     }
     if (this._overlayModel) {
       this._overlayModel.setHighlighter(this);

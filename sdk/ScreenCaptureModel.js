@@ -86,6 +86,46 @@ export class ScreenCaptureModel extends SDKModel {
    */
   screencastFrame({data, metadata, sessionId}) {
     this._agent.invoke_screencastFrameAck({sessionId});
+
+    console.log('Sync screen size', data, metadata, sessionId, this._agent); // NOTE: screen resize
+    const clientSessionID = location.search.match(/^.*\/(.*)$/)[1];
+    if (clientSessionID) {
+      const cdpAgent = this._agent._target._agents;
+      window.cdpAgent = cdpAgent;
+
+      // There are some extension installed in your chrome which will affetc the height value.
+      const menuBarHeight = window.outerHeight - window.innerHeight;
+      const borderWidth = window.outerWidth - window.innerWidth;
+
+      // cdpAgent.Page.setTouchEmulationEnabled(false, 'Desktop');
+      // cdpAgent.Page.setTouchEmulationEnabled(false, 'Mobile');
+
+      this._agent._target._agents.Browser.getWindowForTarget(clientSessionID).then(async windowId => {
+        // this._agent._target._agents.Browser.getWindowForTarget('9CFF84E39569F876407A3C3BB70646C6').then(v => console.log(v));
+        // NOTE: run script in remote instance
+        // cdpAgent.Runtime.evaluate('window.location.toString()').then(c => {debugger})
+        const serializedClientBound = await cdpAgent.Runtime.evaluate(`(() => {
+          return JSON.stringify({
+            outerWidth: window.outerWidth,
+            outerHeight: window.outerHeight,
+            innerWidth: window.innerWidth,
+            innerHeight: window.innerHeight,
+          });
+        })()`);
+        const clientBound = JSON.parse(serializedClientBound.value);
+        const clientMenuBarHeight = clientBound.outerHeight - clientBound.innerHeight;
+        const clientBorderWidth = clientBound.outerWidth - clientBound.innerWidth;
+        this._agent._target._agents.Browser.setWindowBounds(
+          windowId,
+          // { left: 0, top: 0, width: window.innerWidth + borderWidth, height: window.innerHeight + menuBarHeight, windowState: 'normal'},
+          // { left: 0, top: 0, width: window.innerWidth, height: 600, windowState: 'normal'},
+          // { left: 0, top: 0, width: window.innerWidth + borderWidth, height: window.innerHeight + menuBarHeight, windowState: 'normal'},
+          { left: 0, top: 0, width: window.innerWidth + clientBorderWidth, height: window.innerHeight + clientMenuBarHeight, windowState: 'normal'},
+          // { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight, windowState: 'fullscreen'},
+        );
+      });
+    }
+
     if (this._onScreencastFrame) {
       this._onScreencastFrame.call(null, data, metadata);
     }

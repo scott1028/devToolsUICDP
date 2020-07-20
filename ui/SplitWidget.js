@@ -58,6 +58,7 @@ export class SplitWidget extends Widget {
     this.contentElement.classList.add('shadow-split-widget');
     this._sidebarElement =
         this.contentElement.createChild('div', 'shadow-split-widget-contents shadow-split-widget-sidebar vbox');
+    this._sidebarElement.style.display = 'none';
     this._mainElement =
         this.contentElement.createChild('div', 'shadow-split-widget-contents shadow-split-widget-main vbox');
     this._mainElement.createChild('slot').name = 'insertion-point-main';

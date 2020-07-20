@@ -51,6 +51,8 @@ export class InspectorBackend {
     /** @type {!Map<string, !_DispatcherPrototype>} */
     this._dispatcherPrototypes = new Map();
     this._initialized = false;
+
+    // window.aaa = this;
   }
 
   /**
@@ -318,6 +320,9 @@ export class SessionRouter {
         session.target.dispose(reason);
       }
     });
+
+    // debugger;
+    window.bbb = this;
   }
 
   /**
@@ -388,6 +393,7 @@ export class SessionRouter {
    * @param {!_Callback} callback
    */
   sendMessage(sessionId, domain, method, params, callback) {
+    console.log('sessionId, domain, method, params:', sessionId, domain, method, params);
     const messageObject = {};
     const messageId = this._nextMessageId();
     messageObject.id = messageId;
@@ -416,7 +422,12 @@ export class SessionRouter {
       return;
     }
     session.callbacks.set(messageId, callback);
-    this._connection.sendRawMessage(JSON.stringify(messageObject));
+    const rawMessageObject = JSON.stringify(messageObject);
+    // console.log('rawMessageObject:', rawMessageObject);
+    this._connection.sendRawMessage(rawMessageObject);
+    // const copiedMessageObject = {
+    //   ...Object.assign({}, rawMessageObject),
+    // };
   }
 
   /**
@@ -851,6 +862,7 @@ class _AgentPrototype {
      */
     function sendMessagePromise(vararg) {
       const params = Array.prototype.slice.call(arguments);
+      console.log('this, domainAndMethod, signature, params:', this, domainAndMethod, signature, params);
       return _AgentPrototype.prototype._sendMessageToBackendPromise.call(this, domainAndMethod, signature, params);
     }
 

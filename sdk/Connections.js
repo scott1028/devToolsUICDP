@@ -50,6 +50,7 @@ export class MainConnection {
     if (this._onMessage) {
       Host.InspectorFrontendHost.InspectorFrontendHostInstance.sendMessageToBackend(message);
     }
+    // debugger;
   }
 
   /**

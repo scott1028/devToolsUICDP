@@ -9459,6 +9459,14 @@ declare namespace Protocol {
       frame: Frame;
     }
 
+    // Test
+    export interface FrameResizeEvent {
+      /**
+       * Frame object.
+       */
+      frame: Frame;
+    }
+
     /**
      * Fired when a renderer-initiated navigation is requested.
      * Navigation may still be cancelled after the event is issued.
