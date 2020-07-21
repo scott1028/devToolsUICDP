@@ -61,43 +61,73 @@ export class InputModel extends SDK.SDKModel.SDKModel {
   emitTouchFromMouseEvent(event, offsetTop, zoom) {
     const buttons = {0: 'none', 1: 'left', 2: 'middle', 3: 'right'};
     const types = {
+      // 'click': ['mousePressed', 'mouseReleased'],
       'mousedown': 'mousePressed',
       'mouseup': 'mouseReleased',
       'mousemove': 'mouseMoved',
       'mousewheel': 'mouseWheel'
     };
-    if (!(event.type in types) || !(event.which in buttons)) {
-      return;
-    }
-    if (event.type !== 'mousewheel' && buttons[event.which] === 'none') {
-      return;
-    }
-
-    if (event.type === 'mousedown' || this._activeTouchOffsetTop === null) {
-      this._activeTouchOffsetTop = offsetTop;
-    }
-
+    console.log('emitTouchFromMouseEvent/event,event.type:', event, event.type);
     const x = Math.round(event.offsetX / zoom);
     let y = Math.round(event.offsetY / zoom);
     y = Math.round(y - this._activeTouchOffsetTop);
-    const params = {
-      type: types[event.type],
-      x: x,
-      y: y,
-      modifiers: this._modifiersForEvent(event),
-      button: buttons[event.which],
-      clickCount: 0
-    };
-    if (event.type === 'mousewheel') {
-      params.deltaX = event.wheelDeltaX / zoom;
-      params.deltaY = event.wheelDeltaY / zoom;
-    } else {
-      this._activeTouchParams = params;
+    const formatedType = types[event.type];
+    if (formatedType) {
+      const params = {
+        type: formatedType,
+        x: x,
+        y: y,
+        modifiers: this._modifiersForEvent(event),
+        button: buttons[event.which],
+        clickCount: formatedType === 'mousePressed' ? 1 : 0, // NOTE: make mouse click dom event triggered by scott
+        // clickCount: 2,
+      };
+      // Special handler for mousehweel
+      if (formatedType === 'mouseWheel') {
+        params.deltaX = event.wheelDeltaX / zoom;
+        params.deltaY = -event.wheelDeltaY / zoom;
+      } else {
+        this._activeTouchParams = params;
+      }
+      this._inputAgent.invoke_dispatchMouseEvent(params);
+      console.log('emitTouchFromMouseEvent/params:', params);
     }
-    if (event.type === 'mouseup') {
-      this._activeTouchOffsetTop = null;
-    }
-    this._inputAgent.invoke_emulateTouchFromMouseEvent(params);
+    console.log('emitTouchFromMouseEvent/event.type:', event.type);
+
+    // if (!(event.type in types) || !(event.which in buttons)) {
+    //   return;
+    // }
+    // if (event.type !== 'mousewheel' && buttons[event.which] === 'none') {
+    //   return;
+    // }
+
+    // if (event.type === 'mousedown' || this._activeTouchOffsetTop === null) {
+    //   this._activeTouchOffsetTop = offsetTop;
+    // }
+
+    // const x = Math.round(event.offsetX / zoom);
+    // let y = Math.round(event.offsetY / zoom);
+    // y = Math.round(y - this._activeTouchOffsetTop);
+    // const params = {
+    //   type: types[event.type],
+    //   x: x,
+    //   y: y,
+    //   modifiers: this._modifiersForEvent(event),
+    //   button: buttons[event.which],
+    //   clickCount: 0
+    // };
+    // if (event.type === 'mousewheel') {
+    //   params.deltaX = event.wheelDeltaX / zoom;
+    //   params.deltaY = event.wheelDeltaY / zoom;
+    // } else {
+    //   this._activeTouchParams = params;
+    // }
+    // if (event.type === 'mouseup') {
+    //   this._activeTouchOffsetTop = null;
+    // }
+    // // this._inputAgent.invoke_emulateTouchFromMouseEvent(params);
+    // console.log('emitTouchFromMouseEvent/param:', params);
+    // this._inputAgent.invoke_dispatchMouseEvent(params);
   }
 
   cancelTouch() {

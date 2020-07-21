@@ -249,42 +249,62 @@ export class ScreencastView extends UI.Widget.VBox {
    * @param {!Event} event
    */
   async _handleMouseEvent(event) {
-    if (this._isGlassPaneActive()) {
-      event.consume();
-      return;
-    }
-
-    if (!this._pageScaleFactor || !this._domModel) {
-      return;
-    }
-
-    if (!this._inspectModeConfig || event.type === 'mousewheel') {
-      if (this._inputModel) {
-        this._inputModel.emitTouchFromMouseEvent(event, this._screenOffsetTop, this._screenZoom);
-      }
-      event.preventDefault();
-      if (event.type === 'mousedown') {
-        this._canvasElement.focus();
-      }
-      return;
-    }
-
+    console.debug('_handleMouseEvent/event,event.type:', event, event.type);
+    const screenOffsetTop = this._screenOffsetTop;
+    const screenZoom = this._screenZoom;
+    console.debug('_handleMouseEvent/screenOffsetTop,screenZoom:', screenOffsetTop, screenZoom);
+    this._inputModel.emitTouchFromMouseEvent(event, screenOffsetTop, screenZoom);
+    // const aa = SDK.SDKModel.TargetManager.instance();
+    // debugger;
     const position = this._convertIntoScreenSpace(event);
-
+    const x = Math.floor(position.x / this._pageScaleFactor + this._scrollOffsetX);
+    const y = Math.floor(position.y / this._pageScaleFactor + this._scrollOffsetY);
+    console.log('_handleMouseEvent/x,y,this._pageScaleFactor,', x, y, this._pageScaleFactor);
+    console.log('_handleMouseEvent/this._scrollOffsetX,this._scrollOffsetY', this._scrollOffsetX, this._scrollOffsetY);
+    // debugger;
     const node = await this._domModel.nodeForLocation(
-        Math.floor(position.x / this._pageScaleFactor + this._scrollOffsetX),
-        Math.floor(position.y / this._pageScaleFactor + this._scrollOffsetY),
-        Common.Settings.Settings.instance().moduleSetting('showUAShadowDOM').get());
+      x,
+      y,
+      Common.Settings.Settings.instance().moduleSetting('showUAShadowDOM').get());
 
-    if (!node) {
-      return;
-    }
-    if (event.type === 'mousemove') {
-      this.highlightInOverlay({node}, this._inspectModeConfig);
-      this._domModel.overlayModel().nodeHighlightRequested(node.id);
-    } else if (event.type === 'click') {
-      this._domModel.overlayModel().inspectNodeRequested(node.backendNodeId());
-    }
+    console.log('_handleMouseEvent/node:', node);
+
+    // if (this._isGlassPaneActive()) {
+    //   event.consume();
+    //   return;
+    // }
+
+    // if (!this._pageScaleFactor || !this._domModel) {
+    //   return;
+    // }
+
+    // if (!this._inspectModeConfig || event.type === 'mousewheel') {
+    //   if (this._inputModel) {
+    //     this._inputModel.emitTouchFromMouseEvent(event, this._screenOffsetTop, this._screenZoom);
+    //   }
+    //   event.preventDefault();
+    //   if (event.type === 'mousedown') {
+    //     this._canvasElement.focus();
+    //   }
+    //   return;
+    // }
+
+    // const position = this._convertIntoScreenSpace(event);
+
+    // const node = await this._domModel.nodeForLocation(
+    //     Math.floor(position.x / this._pageScaleFactor + this._scrollOffsetX),
+    //     Math.floor(position.y / this._pageScaleFactor + this._scrollOffsetY),
+    //     Common.Settings.Settings.instance().moduleSetting('showUAShadowDOM').get());
+
+    // if (!node) {
+    //   return;
+    // }
+    // if (event.type === 'mousemove') {
+    //   this.highlightInOverlay({node}, this._inspectModeConfig);
+    //   this._domModel.overlayModel().nodeHighlightRequested(node.id);
+    // } else if (event.type === 'click') {
+    //   this._domModel.overlayModel().inspectNodeRequested(node.backendNodeId());
+    // }
   }
 
   /**

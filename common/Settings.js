@@ -126,6 +126,7 @@ export class Settings {
     if (!setting) {
       throw new Error('No setting registered: ' + settingName);
     }
+    // debugger;
     return setting;
   }
 
